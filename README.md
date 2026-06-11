@@ -1,64 +1,100 @@
-# Riverpod MVVM Architecture
+# 🚀 Riverpod MVVM - Advanced Flutter Architecture
 
-A Flutter project demonstrating a clean, scalable architecture using **Riverpod** for state management and **MVVM** as the primary design pattern.
-
-## 🏗️ Project Structure
-
-The project is organized into a modular structure under `lib/src/` to ensure high maintainability and separation of concerns.
-
-### 📂 `lib/src/core/`
-Contains the bedrock of the application that remains constant across features.
-- **`theme/`**: App-wide styling, colors, and asset path helpers.
-- **`constants/`**: Fixed values, API endpoints, and configuration keys.
-- **`ext/`**: Dart extensions for commonly used classes.
-
-### 📂 `lib/src/common/`
-Shared logic and UI components used throughout the app.
-- **`widgets/`**: Reusable UI components (Buttons, Loaders, Skeletons).
-- **`services/`**: Low-level infrastructure services (Storage, Connectivity).
-- **`patterns/`**: Implementation of common patterns like `Result` and `AppState`.
-- **`state_management/`**: Base classes and utilities for ViewModels.
-- **`dependency_injectors/`**: Riverpod providers for global services.
-
-### 📂 `lib/src/features/`
-Feature-based modules. Each feature follows the MVVM pattern internally.
-- **`auth/`**: Authentication logic, Login screens, and User profile management.
-- **`home/`**: Primary application dashboard and main navigation.
-- **`settings/`**: User preferences, theme switching, and app configuration.
-
-Each feature typically contains:
-- `models/`: Data structures.
-- `views/`: UI layer (Widgets/Screens).
-- `view_models/`: Business logic and state handling.
-- `repositories/`: Data abstraction layer.
-- `routes/`: Feature-specific route definitions.
-
-### 📂 `lib/src/routes/`
-Centralized navigation management using `GoRouter`.
+A professional-grade Flutter boilerplate demonstrating a scalable **MVVM (Model-View-ViewModel)** architecture integrated with **Riverpod**. This project is designed for high-performance, maintainability, and clear separation of concerns.
 
 ---
 
-## 🛠️ Key Technologies
+## 🏛️ Architecture & Design Patterns
 
-- **State Management**: [Riverpod](https://riverpod.dev/) (Functional & Class-based providers).
-- **Networking**: [Dio](https://pub.dev/packages/dio) with custom interceptors for:
-  - **Connectivity Checking**: Aborts requests if no internet is detected.
-  - **Auth Interceptors**: Handles Bearer tokens and automatic token refreshing.
-  - **Error Mapping**: Status codes mapped to typed enums (`HttpError`).
-- **Navigation**: [GoRouter](https://pub.dev/packages/go_router) for declarative routing.
-- **Local Storage**: [Shared Preferences](https://pub.dev/packages/shared_preferences).
+### 1. **MVVM (Model-View-ViewModel)**
+- **View**: Declarative UI built with Flutter widgets. Uses `ConsumerWidget` or `StateBuilderWidget` to react to state changes.
+- **ViewModel**: Manages the UI state and business logic. It communicates with repositories and emits states using the `AppState` pattern.
+- **Repository**: Abstract layer that orchestrates data from multiple sources (Remote API or Local Cache).
 
-## 🧩 Architectural Flow
+### 2. **State Management Logic**
+- **`AppState<S, E>` (Sealed Class)**: A robust way to handle UI states.
+  - `InitialState`: The default state before any action.
+  - `LoadingState`: Shown during asynchronous tasks.
+  - `SuccessState<S>`: Holds the successfully fetched data.
+  - `ErrorState<E>`: Encapsulates exceptions for the UI to display.
+- **`StateManagement<T>`**: A base class extending `ChangeNotifier` that provides a structured way to `emitState` and notify listeners only when the state actually changes.
 
-1.  **View** watches a **ViewModel** (Provider).
-2.  **ViewModel** calls a **Repository** method.
-3.  **Repository** uses a **Service** (like `HttpService`) to fetch data.
-4.  **Service** returns a **Result** (Success/Error).
-5.  **ViewModel** updates its **State** based on the result.
-6.  **View** reacts to the state change and updates the UI.
+### 3. **The Result Pattern**
+Repositories return a `Result<Value, Exception>` object. This ensures that the ViewModel always handles both success and failure scenarios explicitly, preventing unhandled exceptions in the UI.
 
-## 🚀 Getting Started
+---
 
-1.  **Dependencies**: Run `flutter pub get`.
-2.  **Environment**: Ensure you are on Flutter SDK `^3.12.1`.
-3.  **Run**: Execute `flutter run` to start the application.
+## 📡 Networking & Services
+
+### **HttpService (Powered by Dio)**
+A centralized networking layer with advanced capabilities:
+- **Connectivity Guard**: Automatically checks for internet connection via `ConnectionService` before every request. Rejects with a "No internet connection" error immediately if offline.
+- **Auth Interceptor**: Automatically attaches Bearer tokens to requests.
+- **Token Refresh logic**: Handles `401 Unauthorized` errors by automatically attempting to refresh the session and retrying the original request.
+- **Error Mapping**: HTTP status codes are mapped to a type-safe `HttpError` enum for easier logic handling.
+
+### **StorageService**
+Abstraction over `shared_preferences` providing a clean API for persistent key-value storage (Auth tokens, settings, etc.).
+
+---
+
+## 📁 Project Directory Structure
+
+```text
+lib/
+├── main.dart                 # App entry point & ProviderScope setup
+└── src/
+    ├── core/                 # Foundation layer
+    │   ├── theme/            # App colors, typography, and asset helpers
+    │   ├── constants/        # API endpoints and static values
+    │   └── ext/              # Reusable Dart extensions
+    ├── common/               # Shared across features
+    │   ├── enums/            # Typed enums (e.g., HttpError)
+    │   ├── widgets/          # Reusable UI components (Buttons, Loaders)
+    │   └── state_management/ # Core ViewModel base classes
+    ├── services/             # Infrastructure (Http, Storage, Connectivity)
+    ├── patterns/             # Architectural patterns (AppState, Result)
+    ├── di/                   # Riverpod Dependency Injection center
+    ├── routes/               # Global navigation & GoRouter config
+    └── features/             # Business modules (Modular approach)
+        └── auth/             # Example: Auth feature
+            ├── models/       # Data entities
+            ├── views/        # UI layer
+            ├── view_models/  # Logic & State emission
+            ├── repositories/ # Data handling
+            └── request/      # API DTOs (Data Transfer Objects)
+```
+
+---
+
+## 🛠️ Implementation Details
+
+### **How to add a new Feature?**
+1. Create a new folder under `features/`.
+2. Define your **Model** and **Repository**.
+3. Create a **ViewModel** extending `StateManagement`.
+4. Define a **Provider** in `lib/src/di/dependency_injector.dart`.
+5. Build your **View** and observe the state using `ref.watch`.
+
+### **Error Handling Workflow**
+1. **Service** catches `DioException` and returns a failed `HttpResult`.
+2. **Repository** maps this to an `ErrorResult` with a specific Exception.
+3. **ViewModel** receives the result and calls `emitState(ErrorState(error))`.
+4. **View** listens via `ref.listen` and shows a SnackBar or Error Widget.
+
+---
+
+## 🚦 Getting Started
+
+1.  **Environment**: Flutter SDK `^3.12.1`.
+2.  **Setup**: Run `flutter pub get`.
+3.  **Run**: Execute `flutter run`.
+
+---
+
+## 📑 Key Features at a Glance
+- ✅ **Type-Safe Navigation**: Integrated GoRouter.
+- ✅ **Clean DI**: No manual instantiation; everything is managed by Riverpod.
+- ✅ **Reactive UI**: State-driven rendering.
+- ✅ **Scalability**: Feature-first folder structure.
+- ✅ **Performance**: Minimized widget rebuilds using specific state emission.
