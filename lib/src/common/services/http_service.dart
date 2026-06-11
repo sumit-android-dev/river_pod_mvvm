@@ -5,6 +5,7 @@ typedef HttpResult = ({int? statusCode, Object? data, String? error});
 
 abstract interface class HttpService {
   Future<HttpResult> getData({required String path});
+  Future<HttpResult> postData({required String path, required Map<String, dynamic> data});
 }
 
 class HttpServiceImpl implements HttpService {
@@ -58,6 +59,21 @@ class HttpServiceImpl implements HttpService {
 
   HttpResult _handleGenericError(Object error) =>
       (statusCode: null, data: null, error: '$error');
+
+  @override
+  Future<HttpResult> postData({
+    required String path,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      final response = await _httpClient.post(path, data: data);
+      return _handleResponse(response);
+    } on DioException catch (e) {
+      return _handleError(e);
+    } catch (e) {
+      return _handleGenericError(e);
+    }
+  }
 
   @override
   Future<HttpResult> getData({

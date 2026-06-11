@@ -6,6 +6,9 @@ abstract interface class StorageService {
   Future<bool?> getBoolValue({required String key});
   Future<void> setBoolValue({required String key, required bool value});
 
+  Future<String?> getStringValue({required String key});
+  Future<void> setStringValue({required String key, required String value});
+
   Future<void> removeValue({required String key});
   Future<void> clearStorage();
 }
@@ -35,6 +38,24 @@ class StorageServiceImpl implements StorageService {
   Future<void> setBoolValue({required String key, required bool value}) async {
     try {
       await _storage.setBool(key, value);
+    } catch (error) {
+      throw Exception('StorageService: $error');
+    }
+  }
+
+  @override
+  Future<String?> getStringValue({required String key}) async {
+    try {
+      return _storage.getString(key);
+    } catch (error) {
+      throw Exception('StorageService: $error');
+    }
+  }
+
+  @override
+  Future<void> setStringValue({required String key, required String value}) async {
+    try {
+      await _storage.setString(key, value);
     } catch (error) {
       throw Exception('StorageService: $error');
     }

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:river_pod_mvvm/src/common/services/connection_service.dart';
 import 'package:river_pod_mvvm/src/common/services/http_service.dart';
 import 'package:river_pod_mvvm/src/common/services/storage_service.dart';
+import 'package:river_pod_mvvm/src/features/auth/repositories/auth_repository.dart';
+import 'package:river_pod_mvvm/src/features/auth/view_models/auth_view_model.dart';
 import 'package:river_pod_mvvm/src/features/settings/repositories/setting_repository.dart';
 import 'package:river_pod_mvvm/src/features/settings/view_models/setting_view_model.dart';
 import 'package:river_pod_mvvm/src/features/users/repositories/user_repository.dart';
@@ -38,6 +40,15 @@ final userRepositoryProvider = Provider.autoDispose<UserRepository>((ref) {
   );
 });
 
+final authRepositoryProvider = Provider.autoDispose<AuthRepository>((ref) {
+  final connectionService = ref.watch(connectionServiceProvider);
+  final httpService = ref.watch(httpServiceProvider);
+  return AuthRepositoryImpl(
+    connectionService: connectionService,
+    httpService: httpService,
+  );
+});
+
 // ViewModels
 final settingViewModelProvider = ChangeNotifierProvider<SettingViewModel>((
   ref,
@@ -49,6 +60,15 @@ final settingViewModelProvider = ChangeNotifierProvider<SettingViewModel>((
 final userViewModelProvider = ChangeNotifierProvider<UserViewModel>((ref) {
   final userRepository = ref.watch(userRepositoryProvider);
   return UserViewModelImpl(userRepository: userRepository);
+});
+
+final authViewModelProvider = ChangeNotifierProvider<AuthViewModel>((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  final storageService = ref.watch(storageServiceProvider);
+  return AuthViewModelImpl(
+    authRepository: authRepository,
+    storageService: storageService,
+  );
 });
 
 /// Init dependencies asynchronously.

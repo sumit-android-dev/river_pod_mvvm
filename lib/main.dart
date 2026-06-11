@@ -19,22 +19,30 @@ class MyApp extends ConsumerWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(appFutureProvider);
+    final appInit = ref.watch(appFutureProvider);
     final settingViewModel = ref.watch(settingViewModelProvider);
-    return StateBuilderWidget<SettingViewModel, SettingModel>(
-      viewModel: settingViewModel,
-      builder: (context, settingModel) {
-        return MaterialApp.router(
-          title: 'Riverpod MVVM Setup',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData.light(useMaterial3: true),
-          darkTheme: ThemeData.dark(useMaterial3: true),
-          themeMode: settingModel.isDarkTheme
-              ? ThemeMode.dark
-              : ThemeMode.light,
-          routerConfig: appRoutes.routes,
-        );
-      },
+
+    return appInit.when(
+      data: (_) => StateBuilderWidget<SettingViewModel, SettingModel>(
+        viewModel: settingViewModel,
+        builder: (context, settingModel) {
+          return MaterialApp.router(
+            title: 'Riverpod MVVM Setup',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData.light(useMaterial3: true),
+            darkTheme: ThemeData.dark(useMaterial3: true),
+            themeMode:
+                settingModel.isDarkTheme ? ThemeMode.dark : ThemeMode.light,
+            routerConfig: appRoutes.routes,
+          );
+        },
+      ),
+      loading: () => const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      ),
+      error: (e, s) => MaterialApp(
+        home: Scaffold(body: Center(child: Text('Init Error: $e'))),
+      ),
     );
   }
 }

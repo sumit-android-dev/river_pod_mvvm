@@ -1,27 +1,35 @@
-/*
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:river_pod_mvvm/src/common/dependency_injectors/dependency_injector.dart';
+import 'package:river_pod_mvvm/src/common/patterns/app_state_pattern.dart';
+import 'package:river_pod_mvvm/src/common/routes/routes.dart';
+import 'package:river_pod_mvvm/src/features/auth/models/auth_model.dart';
+import 'package:river_pod_mvvm/src/features/auth/exceptions/auth_exception.dart';
+import 'package:river_pod_mvvm/src/features/auth/view_models/auth_view_model.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
-  final viewModel = GetIt.instance<AuthViewModel>();
 
   @override
   void initState() {
     super.initState();
-    checkUserSession();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkUserSession();
+    });
   }
 
   /// Checks if the user is already logged in
-  checkUserSession() async {
-    final authSession = AuthSession().isLogin();
-    bool isLogin = await authSession;
+  Future<void> checkUserSession() async {
+    final viewModel = ref.read(authViewModelProvider);
+    bool isLogin = await viewModel.isLogin();
     if (isLogin) {
       routeToHomeScreen();
     }
@@ -29,10 +37,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = ref.watch(authViewModelProvider);
+    final state = viewModel.state;
+
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12.0),
       borderSide: BorderSide.none,
     );
+
+    // Listen for state changes to handle navigation or errors
+    ref.listen(authViewModelProvider.select((vm) => vm.state), (previous, next) {
+      if (next is SuccessState) {
+        routeToHomeScreen();
+      } else if (next is ErrorState<AuthModel, AuthException>) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error.toString())),
+        );
+      }
+    });
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -47,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 60),
                 const Text(
-                  'Email Address',
+                  'Username',
                   style: TextStyle(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w400,
@@ -56,15 +78,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 10),
                 TextFormField(
                   decoration: InputDecoration(
-                    hintText: 'Enter email address',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintText: 'Enter username',
+                    hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: border,
                   ),
-                  initialValue: viewModel.signInRequest.emailAddress,
+                  initialValue: viewModel.signInRequest.username,
                   onChanged: (value) {
-                    viewModel.signInRequest.emailAddress = value;
+                    viewModel.signInRequest.username = value;
                   },
                 ),
                 const SizedBox(height: 20.0),
@@ -78,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   initialValue: viewModel.signInRequest.password,
                   decoration: InputDecoration(
                     hintText: 'Enter password',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: const TextStyle(color: Colors.grey),
                     filled: true,
                     fillColor: Colors.grey.shade100,
                     border: border,
@@ -99,51 +121,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 32.0),
-                buildSignInButton(),
+                buildSignInButton(viewModel),
                 const SizedBox(height: 20),
               ],
             ),
           ),
-          BlocConsumer(
-            bloc: viewModel.authBloc,
-            builder: (context, state) {
-              return handleBlocStateWithWidget(
-                state: state,
-                loading: () {
-                  state as AuthLoading;
-                  return Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    color: Colors.black12,
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                },
-                error: (state) => const SizedBox.shrink(),
-                orElse: () => const SizedBox.shrink(),
-              );
-            },
-            listener: (context, state) {
-              handleBlocState(
-                state: state,
-                onSuccess: (state) {
-                  routeToHomeScreen();
-                },
-                onError: (state) {
-                  state as AuthError;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
-                },
-              );
-            },
-          ),
+          if (state is LoadingState)
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              color: Colors.black12,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
         ],
       ),
     );
   }
 
   /// Builds the sign-in button with validation
-  Widget buildSignInButton() {
+  Widget buildSignInButton(AuthViewModel viewModel) {
     return SizedBox(
       width: double.infinity,
       height: 55.0,
@@ -155,11 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         onPressed: () {
-          if (viewModel.canSendSignInRequest().$1) {
-            viewModel.signIn();
+          final validation = viewModel.canSendSignInRequest();
+          if (validation.$1) {
+            viewModel.login();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(viewModel.canSendSignInRequest().$2)),
+              SnackBar(content: Text(validation.$2)),
             );
           }
         },
@@ -176,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   /// Routes to the home screen after successful login or auto-login
-  routeToHomeScreen() {
-
+  void routeToHomeScreen() {
+    context.go(Routes.home);
   }
-}*/
+}
