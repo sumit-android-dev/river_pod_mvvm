@@ -1,4 +1,4 @@
-class AuthModel {
+class UserProfile {
   final int id;
   final String username;
   final String email;
@@ -6,10 +6,8 @@ class AuthModel {
   final String lastName;
   final String gender;
   final String image;
-  final String accessToken;
-  final String refreshToken;
 
-  AuthModel({
+  UserProfile({
     required this.id,
     required this.username,
     required this.email,
@@ -17,12 +15,10 @@ class AuthModel {
     required this.lastName,
     required this.gender,
     required this.image,
-    required this.accessToken,
-    required this.refreshToken,
   });
 
-  factory AuthModel.fromJson(Map<String, dynamic> json) {
-    return AuthModel(
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
       id: json['id'],
       username: json['username'],
       email: json['email'],
@@ -30,8 +26,6 @@ class AuthModel {
       lastName: json['lastName'],
       gender: json['gender'],
       image: json['image'],
-      accessToken: json['accessToken'] ?? '',
-      refreshToken: json['refreshToken'] ?? '',
     );
   }
 }

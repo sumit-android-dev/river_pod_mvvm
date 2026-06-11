@@ -4,8 +4,10 @@ import 'package:river_pod_mvvm/src/common/patterns/result_pattern.dart';
 import 'package:river_pod_mvvm/src/common/state_management/state_management.dart';
 import 'package:river_pod_mvvm/src/features/auth/exceptions/auth_exception.dart';
 import 'package:river_pod_mvvm/src/features/auth/models/auth_model.dart';
+import 'package:river_pod_mvvm/src/features/auth/models/user_profile.dart';
 import 'package:river_pod_mvvm/src/features/auth/repositories/auth_repository.dart';
 import 'package:river_pod_mvvm/src/common/services/storage_service.dart';
+import 'package:river_pod_mvvm/src/features/auth/request/sign_in_request.dart';
 
 typedef AuthState = AppState<AuthModel, AuthException>;
 

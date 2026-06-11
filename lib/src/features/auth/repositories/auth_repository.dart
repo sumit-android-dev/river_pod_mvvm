@@ -4,6 +4,8 @@ import 'package:river_pod_mvvm/src/common/services/connection_service.dart';
 import 'package:river_pod_mvvm/src/common/services/http_service.dart';
 import 'package:river_pod_mvvm/src/features/auth/exceptions/auth_exception.dart';
 import 'package:river_pod_mvvm/src/features/auth/models/auth_model.dart';
+import 'package:river_pod_mvvm/src/features/auth/models/user_profile.dart';
+import 'package:river_pod_mvvm/src/features/auth/request/sign_in_request.dart';
 
 typedef AuthResult = Result<AuthModel, AuthException>;
 
