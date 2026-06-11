@@ -86,7 +86,7 @@ lib/
 
 ## 🚦 Getting Started
 
-1.  **Environment**: Flutter SDK `^3.12.1`.
+1.  **Environment**: Flutter SDK `^3.44.1`.
 2.  **Setup**: Run `flutter pub get`.
 3.  **Run**: Execute `flutter run`.
 
