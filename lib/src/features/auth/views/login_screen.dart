@@ -19,23 +19,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkUserSession();
-    });
-  }
-
-  /// Checks if the user is already logged in
-  Future<void> checkUserSession() async {
-    final viewModel = ref.read(authViewModelProvider);
-    bool isLogin = await viewModel.isLogin();
-    if (isLogin) {
-      routeToHomeScreen();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(authViewModelProvider);
     final state = viewModel.state;
