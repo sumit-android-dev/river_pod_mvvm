@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:river_pod_mvvm/src/common/dependency_injectors/dependency_injector.dart';
-import 'package:river_pod_mvvm/src/common/routes/routes.dart';
+import 'package:river_pod_mvvm/src/di/dependency_injector.dart';
+import 'package:river_pod_mvvm/src/routes/routes.dart';
 import 'package:river_pod_mvvm/src/common/state_management/state_management.dart';
 import 'package:river_pod_mvvm/src/features/settings/models/setting_model.dart';
 import 'package:river_pod_mvvm/src/features/settings/view_models/setting_view_model.dart';

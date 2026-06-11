@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:river_pod_mvvm/src/common/constants/api_constant.dart';
+import 'package:river_pod_mvvm/src/core/constants/api_constant.dart';
 import 'package:river_pod_mvvm/src/common/enums/http_error_enum.dart';
-import 'package:river_pod_mvvm/src/common/services/connection_service.dart';
-import 'package:river_pod_mvvm/src/common/services/storage_service.dart';
+import 'package:river_pod_mvvm/src/services/connection_service.dart';
+import 'package:river_pod_mvvm/src/services/storage_service.dart';
 
 typedef HttpResult = ({
   int? statusCode,

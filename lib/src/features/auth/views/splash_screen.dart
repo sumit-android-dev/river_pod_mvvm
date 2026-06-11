@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:river_pod_mvvm/src/common/dependency_injectors/dependency_injector.dart';
-import 'package:river_pod_mvvm/src/common/routes/routes.dart';
+import 'package:river_pod_mvvm/src/di/dependency_injector.dart';
+import 'package:river_pod_mvvm/src/routes/routes.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

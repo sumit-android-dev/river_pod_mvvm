@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:river_pod_mvvm/src/common/services/connection_service.dart';
-import 'package:river_pod_mvvm/src/common/services/http_service.dart';
-import 'package:river_pod_mvvm/src/common/services/storage_service.dart';
+import 'package:river_pod_mvvm/src/services/connection_service.dart';
+import 'package:river_pod_mvvm/src/services/http_service.dart';
+import 'package:river_pod_mvvm/src/services/storage_service.dart';
 import 'package:river_pod_mvvm/src/features/auth/repositories/auth_repository.dart';
 import 'package:river_pod_mvvm/src/features/auth/view_models/auth_view_model.dart';
 import 'package:river_pod_mvvm/src/features/settings/repositories/setting_repository.dart';

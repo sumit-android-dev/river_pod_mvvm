@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:river_pod_mvvm/src/common/theme/color/colors.dart';
-import 'package:river_pod_mvvm/src/common/theme/font/fonts.dart';
+import 'package:river_pod_mvvm/src/core/theme/color/colors.dart';
+import 'package:river_pod_mvvm/src/core/theme/font/fonts.dart';
 
 class AppTextStyle {
   AppTextStyle._(); // Prevent instantiation

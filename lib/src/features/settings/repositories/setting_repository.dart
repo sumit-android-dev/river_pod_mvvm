@@ -1,5 +1,5 @@
-import 'package:river_pod_mvvm/src/common/constants/value_constant.dart';
-import 'package:river_pod_mvvm/src/common/services/storage_service.dart';
+import 'package:river_pod_mvvm/src/core/constants/value_constant.dart';
+import 'package:river_pod_mvvm/src/services/storage_service.dart';
 import 'package:river_pod_mvvm/src/features/settings/models/setting_model.dart';
 
 abstract interface class SettingRepository {

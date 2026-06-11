@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:river_pod_mvvm/src/common/extensions/platform_extension.dart';
+import 'package:river_pod_mvvm/src/core/ext/platform_extension.dart';
 
 typedef OnRefreshCallback = Future<void> Function();
 
