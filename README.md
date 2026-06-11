@@ -52,8 +52,8 @@ This project follows the **Model-ViewModel-View** pattern:
 ## 🚦 Getting Started
 
 ### Prerequisites
-- Flutter SDK: `^3.12.1`
-- Dart SDK: `^3.0.0`
+- Flutter SDK: `^3.44.1`
+- Dart SDK: `^3.12.1`
 
 ### Installation
 1.  Clone the repository:
