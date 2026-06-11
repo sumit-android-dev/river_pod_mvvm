@@ -13,10 +13,12 @@ typedef _ViewModel = StateManagement<AuthState>;
 
 abstract interface class AuthViewModel extends _ViewModel {
   SignInRequest get signInRequest;
+  UserProfile? get userProfile;
   Future<void> login();
   Future<void> logout();
   (bool, String) canSendSignInRequest();
   Future<bool> isLogin();
+  Future<void> getProfile();
 }
 
 class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
@@ -25,6 +27,9 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
 
   @override
   final SignInRequest signInRequest = SignInRequest();
+
+  @override
+  UserProfile? userProfile;
 
   AuthViewModelImpl({
     required this.authRepository,
@@ -52,10 +57,25 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
     final result = await authRepository.login(signInRequest);
 
     if (result is SuccessResult<AuthModel, AuthException>) {
-      await storageService.setStringValue(
-        key: 'token',
-        value: result.value.accessToken,
+      userProfile = UserProfile(
+        id: result.value.id,
+        username: result.value.username,
+        email: result.value.email,
+        firstName: result.value.firstName,
+        lastName: result.value.lastName,
+        gender: result.value.gender,
+        image: result.value.image,
       );
+      await Future.wait([
+        storageService.setStringValue(
+          key: 'accessToken',
+          value: result.value.accessToken,
+        ),
+        storageService.setStringValue(
+          key: 'refreshToken',
+          value: result.value.refreshToken,
+        ),
+      ]);
       emitState(SuccessState(data: result.value));
     } else if (result is ErrorResult<AuthModel, AuthException>) {
       emitState(ErrorState(error: result.error));
@@ -64,13 +84,26 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
 
   @override
   Future<void> logout() async {
-    await storageService.removeValue(key: 'token');
+    userProfile = null;
+    await Future.wait([
+      storageService.removeValue(key: 'accessToken'),
+      storageService.removeValue(key: 'refreshToken'),
+    ]);
     emitState(const InitialState());
   }
 
   @override
   Future<bool> isLogin() async {
-    final token = await storageService.getStringValue(key: 'token');
+    final token = await storageService.getStringValue(key: 'accessToken');
     return token != null && token.isNotEmpty;
+  }
+
+  @override
+  Future<void> getProfile() async {
+    final result = await authRepository.getCurrentUser();
+    if (result is SuccessResult<UserProfile, AuthException>) {
+      userProfile = result.value;
+      notifyListeners();
+    }
   }
 }

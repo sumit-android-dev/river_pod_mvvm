@@ -1,29 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:river_pod_mvvm/src/common/dependency_injectors/dependency_injector.dart';
 import 'package:river_pod_mvvm/src/common/patterns/app_state_pattern.dart';
 import 'package:river_pod_mvvm/src/common/state_management/state_management.dart';
 import 'package:river_pod_mvvm/src/common/widgets/refresh_button_widget.dart';
 import 'package:river_pod_mvvm/src/common/widgets/refresh_indicator_widget.dart';
 import 'package:river_pod_mvvm/src/common/widgets/skeleton_refresh_widget.dart';
+import 'package:river_pod_mvvm/src/features/auth/routes/auth_routes.dart';
 import 'package:river_pod_mvvm/src/features/settings/routes/setting_routes.dart';
 import 'package:river_pod_mvvm/src/features/users/routes/user_routes.dart';
 import 'package:river_pod_mvvm/src/features/users/view_models/user_view_model.dart';
 
-class UserView extends StatefulWidget {
+class UserView extends ConsumerStatefulWidget {
   final UserViewModel userViewModel;
 
   const UserView({super.key, required this.userViewModel});
 
   @override
-  State<UserView> createState() => _UserViewState();
+  ConsumerState<UserView> createState() => _UserViewState();
 }
 
-class _UserViewState extends State<UserView> {
+class _UserViewState extends ConsumerState<UserView> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _getAllUsers();
+      await ref.read(authViewModelProvider).getProfile();
     });
   }
 
@@ -33,6 +37,9 @@ class _UserViewState extends State<UserView> {
 
   @override
   Widget build(BuildContext context) {
+    final authViewModel = ref.watch(authViewModelProvider);
+    final userProfile = authViewModel.userProfile;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -50,6 +57,33 @@ class _UserViewState extends State<UserView> {
             },
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              currentAccountPicture: userProfile != null
+                  ? CircleAvatar(backgroundImage: NetworkImage(userProfile.image))
+                  : const CircleAvatar(child: Icon(Icons.person)),
+              accountName: Text(
+                userProfile != null
+                    ? '${userProfile.firstName} ${userProfile.lastName}'
+                    : 'Loading...',
+              ),
+              accountEmail: Text(userProfile?.email ?? ''),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () async {
+                await authViewModel.logout();
+                if (context.mounted) {
+                  context.go(AuthRoutes.login);
+                }
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: RefreshIndicatorWidget(

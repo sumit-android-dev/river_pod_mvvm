@@ -16,7 +16,8 @@ final connectionServiceProvider = Provider<ConnectionService>((ref) {
 });
 
 final httpServiceProvider = Provider<HttpService>((ref) {
-  return HttpServiceImpl();
+  final storageService = ref.watch(storageServiceProvider);
+  return HttpServiceImpl(storageService: storageService);
 });
 
 final storageServiceProvider = Provider<StorageService>((ref) {

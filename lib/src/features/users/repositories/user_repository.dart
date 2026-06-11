@@ -29,7 +29,7 @@ class UserRepositoryImpl implements UserRepository {
         return ErrorResult(error: UserException('Device not connected.'));
       }
 
-      final result = await httpService.getData(path: ApiConstant.users);
+      final result = await httpService.getData(path: ApiConstant.me);
 
       if (result.statusCode == 200 && result.data != null) {
         final users = (result.data as List)

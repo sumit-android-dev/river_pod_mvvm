@@ -1,14 +1,20 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:river_pod_mvvm/src/common/constants/api_constant.dart';
+import 'package:river_pod_mvvm/src/common/services/storage_service.dart';
 
 typedef HttpResult = ({int? statusCode, Object? data, String? error});
 
 abstract interface class HttpService {
   Future<HttpResult> getData({required String path});
-  Future<HttpResult> postData({required String path, required Map<String, dynamic> data});
+  Future<HttpResult> postData({
+    required String path,
+    required Map<String, dynamic> data,
+  });
 }
 
 class HttpServiceImpl implements HttpService {
+  final StorageService storageService;
   final _httpClient = Dio(
     BaseOptions(
       connectTimeout: const Duration(seconds: 5),
@@ -17,11 +23,15 @@ class HttpServiceImpl implements HttpService {
     ),
   );
 
-  HttpServiceImpl() {
+  HttpServiceImpl({required this.storageService}) {
     _httpClient.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
+        onRequest: (options, handler) async {
           debugPrint('➡️ Request to: ${options.uri}');
+          final token = await storageService.getStringValue(key: 'accessToken');
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
           return handler.next(options);
         },
         onResponse: (response, handler) {
@@ -30,6 +40,21 @@ class HttpServiceImpl implements HttpService {
         },
         onError: (DioException e, handler) async {
           debugPrint('❌ Dio error: ${e.message}');
+
+          if (e.response?.statusCode == 401) {
+            final success = await _refreshToken();
+            if (success) {
+              final options = e.requestOptions;
+              final token = await storageService.getStringValue(
+                key: 'accessToken',
+              );
+              options.headers['Authorization'] = 'Bearer $token';
+
+              final res = await _httpClient.fetch(options);
+              return handler.resolve(res);
+            }
+          }
+
           int retryCount = 0;
           int maxRetries = 3;
 
@@ -46,6 +71,37 @@ class HttpServiceImpl implements HttpService {
         },
       ),
     );
+  }
+
+  Future<bool> _refreshToken() async {
+    try {
+      final refreshToken = await storageService.getStringValue(
+        key: 'refreshToken',
+      );
+      if (refreshToken == null) return false;
+
+      final response = await Dio().post(
+        ApiConstant.refresh,
+        data: {'refreshToken': refreshToken, 'expiresInMins': 30},
+      );
+
+      if (response.statusCode == 200) {
+        final newAccessToken = response.data['accessToken'];
+        final newRefreshToken = response.data['refreshToken'];
+
+        await Future.wait([
+          storageService.setStringValue(key: 'accessToken', value: newAccessToken),
+          storageService.setStringValue(
+            key: 'refreshToken',
+            value: newRefreshToken,
+          ),
+        ]);
+        return true;
+      }
+    } catch (e) {
+      debugPrint('❌ Refresh token failed: $e');
+    }
+    return false;
   }
 
   HttpResult _handleResponse(Response response) =>
@@ -76,10 +132,7 @@ class HttpServiceImpl implements HttpService {
   }
 
   @override
-  Future<HttpResult> getData({
-    required String path,
-    bool useAuth = true,
-  }) async {
+  Future<HttpResult> getData({required String path}) async {
     try {
       final response = await _httpClient.get(path);
       return _handleResponse(response);
