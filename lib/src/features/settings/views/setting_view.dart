@@ -14,21 +14,52 @@ class SettingView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authViewModel = ref.watch(authViewModelProvider);
+    final userProfile = authViewModel.userProfile;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
         title: const Text('Settings'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_outlined),
-          onPressed: () {
-            context.pop();
-          },
-        ),
       ),
-      body: Center(
-        child: ListView(
-          children: <Widget>[
-            ListTile(
+      body: ListView(
+        children: <Widget>[
+          if (userProfile != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: NetworkImage(userProfile.image),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${userProfile.firstName} ${userProfile.lastName}',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          userProfile.email,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.grey,
+                              ),
+                        ),
+                        Text(
+                          '@${userProfile.username}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const Divider(),
+          ListTile(
               leading: const Icon(Icons.brightness_6_outlined),
               title: const Text('Dark theme'),
               trailing: StateBuilderWidget<SettingViewModel, SettingModel>(
@@ -78,7 +109,6 @@ class SettingView extends ConsumerWidget {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

@@ -1,10 +1,10 @@
 import 'package:go_router/go_router.dart';
 import 'package:river_pod_mvvm/src/features/auth/routes/auth_routes.dart';
 import 'package:river_pod_mvvm/src/features/settings/routes/setting_routes.dart';
-import 'package:river_pod_mvvm/src/features/users/routes/user_routes.dart';
+import 'package:river_pod_mvvm/src/features/home/routes/home_routes.dart';
 
 class Routes {
-  static String get home => UserRoutes.users;
+  static String get home => HomeRoutes.home;
   static String get login => AuthRoutes.login;
   static String get splash => AuthRoutes.splash;
 
@@ -15,8 +15,8 @@ class Routes {
     initialLocation: splash,
     routes: [
       ...AuthRoutes().routes,
-      ...UserRoutes().routes,
       ...SettingRoutes().routes,
+      ...HomeRoutes().routes,
     ],
   );
 }

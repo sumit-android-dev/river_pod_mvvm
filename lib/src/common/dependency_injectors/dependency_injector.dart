@@ -7,8 +7,6 @@ import 'package:river_pod_mvvm/src/features/auth/repositories/auth_repository.da
 import 'package:river_pod_mvvm/src/features/auth/view_models/auth_view_model.dart';
 import 'package:river_pod_mvvm/src/features/settings/repositories/setting_repository.dart';
 import 'package:river_pod_mvvm/src/features/settings/view_models/setting_view_model.dart';
-import 'package:river_pod_mvvm/src/features/users/repositories/user_repository.dart';
-import 'package:river_pod_mvvm/src/features/users/view_models/user_view_model.dart';
 
 // Services
 final connectionServiceProvider = Provider<ConnectionService>((ref) {
@@ -32,15 +30,6 @@ final settingRepositoryProvider = Provider.autoDispose<SettingRepository>((
   return SettingRepositoryImpl(storageService: storageService);
 });
 
-final userRepositoryProvider = Provider.autoDispose<UserRepository>((ref) {
-  final connectionService = ref.watch(connectionServiceProvider);
-  final httpService = ref.watch(httpServiceProvider);
-  return UserRepositoryImpl(
-    connectionService: connectionService,
-    httpService: httpService,
-  );
-});
-
 final authRepositoryProvider = Provider.autoDispose<AuthRepository>((ref) {
   final connectionService = ref.watch(connectionServiceProvider);
   final httpService = ref.watch(httpServiceProvider);
@@ -56,11 +45,6 @@ final settingViewModelProvider = ChangeNotifierProvider<SettingViewModel>((
 ) {
   final settingRepository = ref.watch(settingRepositoryProvider);
   return SettingViewModelImpl(settingRepository: settingRepository);
-});
-
-final userViewModelProvider = ChangeNotifierProvider<UserViewModel>((ref) {
-  final userRepository = ref.watch(userRepositoryProvider);
-  return UserViewModelImpl(userRepository: userRepository);
 });
 
 final authViewModelProvider = ChangeNotifierProvider<AuthViewModel>((ref) {
