@@ -15,7 +15,11 @@ final connectionServiceProvider = Provider<ConnectionService>((ref) {
 
 final httpServiceProvider = Provider<HttpService>((ref) {
   final storageService = ref.watch(storageServiceProvider);
-  return HttpServiceImpl(storageService: storageService);
+  final connectionService = ref.watch(connectionServiceProvider);
+  return HttpServiceImpl(
+    storageService: storageService,
+    connectionService: connectionService,
+  );
 });
 
 final storageServiceProvider = Provider<StorageService>((ref) {
@@ -31,12 +35,8 @@ final settingRepositoryProvider = Provider.autoDispose<SettingRepository>((
 });
 
 final authRepositoryProvider = Provider.autoDispose<AuthRepository>((ref) {
-  final connectionService = ref.watch(connectionServiceProvider);
   final httpService = ref.watch(httpServiceProvider);
-  return AuthRepositoryImpl(
-    connectionService: connectionService,
-    httpService: httpService,
-  );
+  return AuthRepositoryImpl(httpService: httpService);
 });
 
 // ViewModels
