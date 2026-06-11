@@ -1,82 +1,64 @@
-# Riverpod MVVM Flutter Project
+# Riverpod MVVM Architecture
 
-A robust and scalable Flutter application boilerplate implementing the **MVVM (Model-View-ViewModel)** architecture combined with **Riverpod** for state management.
+A Flutter project demonstrating a clean, scalable architecture using **Riverpod** for state management and **MVVM** as the primary design pattern.
 
-## 🚀 Features
+## 🏗️ Project Structure
 
-- **State Management**: Powered by [Riverpod](https://riverpod.dev/) for a reactive and testable architecture.
-- **Navigation**: Structured routing using [GoRouter](https://pub.dev/packages/go_router).
-- **Network Layer**: Robust HTTP service using [Dio](https://pub.dev/packages/dio) with:
-  - **Interceptors**: Global request/response logging and error handling.
-  - **Connectivity Guard**: Automatic internet connection check before every request.
-  - **Token Refresh**: Automatic handling of 401 Unauthorized errors with refresh token logic.
-- **Modular Architecture**: Feature-based folder structure for better scalability.
-- **Design Patterns**:
-  - **Result Pattern**: Consistent handling of Success and Error states from repositories.
-  - **AppState Pattern**: Unified UI states (Initial, Loading, Success, Error).
-  - **Repository Pattern**: Abstracted data layer for better testability.
-- **Local Storage**: Simple key-value storage using `shared_preferences`.
-- **Theming**: Integrated theme management (Light/Dark mode) using Riverpod.
+The project is organized into a modular structure under `lib/src/` to ensure high maintainability and separation of concerns.
 
-## 📁 Project Structure
+### 📂 `lib/src/core/`
+Contains the bedrock of the application that remains constant across features.
+- **`theme/`**: App-wide styling, colors, and asset path helpers.
+- **`constants/`**: Fixed values, API endpoints, and configuration keys.
+- **`ext/`**: Dart extensions for commonly used classes.
 
-```text
-lib/
-├── main.dart                 # Application entry point
-└── src/
-    ├── common/               # Shared utilities and global components
-    │   ├── constants/        # API and Value constants
-    │   ├── dependency_injectors/ # Riverpod Providers for services/repositories
-    │   ├── enums/            # Global Enums (e.g., HttpError)
-    │   ├── patterns/         # Common logic patterns (Result, AppState)
-    │   ├── routes/           # Routing configuration
-    │   ├── services/         # Core services (Http, Storage, Connectivity)
-    │   ├── state_management/ # Base classes for ViewModels
-    │   ├── theme/            # App theme configuration
-    │   └── widgets/          # Reusable UI components
-    └── features/             # Feature-based modules
-        ├── auth/             # Authentication module (Login, Profile)
-        ├── home/             # Home module
-        └── settings/         # Settings and Theme configuration
-```
+### 📂 `lib/src/common/`
+Shared logic and UI components used throughout the app.
+- **`widgets/`**: Reusable UI components (Buttons, Loaders, Skeletons).
+- **`services/`**: Low-level infrastructure services (Storage, Connectivity).
+- **`patterns/`**: Implementation of common patterns like `Result` and `AppState`.
+- **`state_management/`**: Base classes and utilities for ViewModels.
+- **`dependency_injectors/`**: Riverpod providers for global services.
 
-## 🛠️ Architecture: MVVM
+### 📂 `lib/src/features/`
+Feature-based modules. Each feature follows the MVVM pattern internally.
+- **`auth/`**: Authentication logic, Login screens, and User profile management.
+- **`home/`**: Primary application dashboard and main navigation.
+- **`settings/`**: User preferences, theme switching, and app configuration.
 
-This project follows the **Model-ViewModel-View** pattern:
+Each feature typically contains:
+- `models/`: Data structures.
+- `views/`: UI layer (Widgets/Screens).
+- `view_models/`: Business logic and state handling.
+- `repositories/`: Data abstraction layer.
+- `routes/`: Feature-specific route definitions.
 
-1.  **Model**: Defines the data structure (e.g., `AuthModel`, `UserProfile`).
-2.  **View**: Flutter widgets that observe the ViewModel and display the UI.
-3.  **ViewModel**: Handles business logic, interacts with Repositories, and exposes state to the View.
-4.  **Repository**: Acts as a bridge between the ViewModel and Data Sources (Remote API or Local Storage).
+### 📂 `lib/src/routes/`
+Centralized navigation management using `GoRouter`.
 
-## 🚦 Getting Started
+---
 
-### Prerequisites
-- Flutter SDK: `^3.44.1`
-- Dart SDK: `^3.12.1`
+## 🛠️ Key Technologies
 
-### Installation
-1.  Clone the repository:
-    ```bash
-    git clone <repository-url>
-    ```
-2.  Install dependencies:
-    ```bash
-    flutter pub get
-    ```
-3.  Run the application:
-    ```bash
-    flutter run
-    ```
+- **State Management**: [Riverpod](https://riverpod.dev/) (Functional & Class-based providers).
+- **Networking**: [Dio](https://pub.dev/packages/dio) with custom interceptors for:
+  - **Connectivity Checking**: Aborts requests if no internet is detected.
+  - **Auth Interceptors**: Handles Bearer tokens and automatic token refreshing.
+  - **Error Mapping**: Status codes mapped to typed enums (`HttpError`).
+- **Navigation**: [GoRouter](https://pub.dev/packages/go_router) for declarative routing.
+- **Local Storage**: [Shared Preferences](https://pub.dev/packages/shared_preferences).
 
-## 📡 Networking & Error Handling
+## 🧩 Architectural Flow
 
-The app uses a centralized `HttpService` to manage API calls.
+1.  **View** watches a **ViewModel** (Provider).
+2.  **ViewModel** calls a **Repository** method.
+3.  **Repository** uses a **Service** (like `HttpService`) to fetch data.
+4.  **Service** returns a **Result** (Success/Error).
+5.  **ViewModel** updates its **State** based on the result.
+6.  **View** reacts to the state change and updates the UI.
 
-- **Connectivity**: Every request is intercepted to check for internet availability.
-- **Error Mapping**: HTTP status codes are mapped to the `HttpError` enum for type-safe handling.
-- **Result Type**: Repositories return a `Result<Data, Exception>` object, ensuring all outcomes are handled at the UI level.
+## 🚀 Getting Started
 
-## 📄 License
-
-This project is for internal use. See `LICENSE` file for more details (if applicable).
+1.  **Dependencies**: Run `flutter pub get`.
+2.  **Environment**: Ensure you are on Flutter SDK `^3.12.1`.
+3.  **Run**: Execute `flutter run` to start the application.
