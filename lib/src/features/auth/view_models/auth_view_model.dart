@@ -14,6 +14,7 @@ typedef _ViewModel = StateManagement<AuthState>;
 abstract interface class AuthViewModel extends _ViewModel {
   SignInRequest get signInRequest;
   Future<void> login();
+  Future<void> logout();
   (bool, String) canSendSignInRequest();
   Future<bool> isLogin();
 }
@@ -59,6 +60,12 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
     } else if (result is ErrorResult<AuthModel, AuthException>) {
       emitState(ErrorState(error: result.error));
     }
+  }
+
+  @override
+  Future<void> logout() async {
+    await storageService.removeValue(key: 'token');
+    emitState(const InitialState());
   }
 
   @override
