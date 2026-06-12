@@ -82,16 +82,13 @@ All sensitive keys are managed via `.env` files and obfuscated using `Envied` co
 ## 🛠️ Setup & Installation
 
 ### 1. Requirements
-*   Flutter SDK: `^3.12.1`
-*   Dart SDK: `^3.0.0`
+*   Flutter SDK: `^3.44.1`
+*   Dart SDK: `^3.12.1`
 
 ### 2. Environment Setup
 Create a `.env` file in the project root:
 ```env
-BASE_URL=https://api.example.com
-API_KEY=your_secret_key
-ENVIRONMENT=development
-APP_NAME=RiverpodMVVM
+BASE_URL=https://dummyjson.com
 ```
 
 ### 3. Initialize
