@@ -25,9 +25,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final viewModel = ref.watch(authViewModelProvider);
     final state = viewModel.state;
-
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final border = OutlineInputBorder(borderRadius: BorderRadius.circular(12.0), borderSide: BorderSide.none);
 
     /// Listen for state changes to handle navigation or errors
@@ -65,7 +62,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       hintText: 'Enter username',
                       hintStyle: AppTextStyle.onestRegular(textColor: AppColors.grey, textSize: 16.0),
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest,
+                      fillColor: AppColors.greyE9,
                       border: border,
                     ),
                     initialValue: viewModel.signInRequest.username,
@@ -84,7 +81,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       hintText: 'Enter password',
                       hintStyle: AppTextStyle.onestRegular(textColor: AppColors.grey, textSize: 16.0),
                       filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest,
+                      fillColor: AppColors.greyE9,
                       border: border,
                       suffixIcon: IconButton(
                         icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
@@ -100,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 32.0),
-                  _buildSignInButton(viewModel, colorScheme),
+                  _buildSignInButton(viewModel),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -111,7 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               width: double.infinity,
               height: double.infinity,
               color: Colors.black45,
-              child: Center(child: CircularProgressIndicator(color: colorScheme.primary)),
+              child: Center(child: CircularProgressIndicator(color: AppColors.blue35)),
             ),
         ],
       ),
@@ -119,14 +116,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   /// Builds the sign-in button with validation
-  Widget _buildSignInButton(AuthViewModel viewModel, ColorScheme colorScheme) {
+  Widget _buildSignInButton(AuthViewModel viewModel) {
     return SizedBox(
       width: double.infinity,
       height: 55.0,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: colorScheme.primary,
-          foregroundColor: colorScheme.onPrimary,
+          backgroundColor: AppColors.blue35,
+          foregroundColor: AppColors.blue35,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
         ),
         onPressed: () {
