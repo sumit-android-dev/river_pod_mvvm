@@ -73,7 +73,7 @@ lib/
 1. Create a new folder under `features/`.
 2. Define your **Model** and **Repository**.
 3. Create a **ViewModel** extending `StateManagement`.
-4. Define a **Provider** in `lib/src/di/dependency_injector.dart`.
+4. Define a **Provider** in `lib/di/dependency_injector.dart`.
 5. Build your **View** and observe the state using `ref.watch`.
 
 ### **Error Handling Workflow**
