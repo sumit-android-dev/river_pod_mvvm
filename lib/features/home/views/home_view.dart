@@ -26,7 +26,13 @@ class _UserViewState extends ConsumerState<HomeView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBarView(title: "Home"),
-      body: SafeArea(child: Container()),
+      body: SafeArea(child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+
+        ],
+      )),
     );
   }
 }

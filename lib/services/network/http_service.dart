@@ -123,7 +123,7 @@ class HttpServiceImpl implements HttpService {
         return false;
       }
 
-      final response = await Dio().post(ApiConstant.refresh, data: {'refreshToken': refreshToken, 'expiresInMins': 2});
+      final response = await _httpClient.post(ApiConstant.refresh, data: {'refreshToken': refreshToken, 'expiresInMins': 2});
 
       if (response.statusCode == 200) {
         final accessToken = response.data['accessToken'];
