@@ -1,117 +1,119 @@
-# 🚀 Riverpod MVVM - Professional Flutter Architecture
+# 🌊 Riverpod MVVM - Enterprise Flutter Boilerplate
 
-A production-ready Flutter boilerplate demonstrating a scalable **MVVM (Model-View-ViewModel)** architecture powered by **Riverpod**. This project is engineered for high performance, maintainability, and a clear separation of concerns, making it ideal for enterprise-level applications.
+[![Flutter](https://img.shields.io/badge/Flutter-v3.12.1-blue.svg?logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Riverpod](https://img.shields.io/badge/Riverpod-v3.3.1-60B5FF.svg?logo=riverpod&logoColor=white)](https://riverpod.dev/)
+[![Dio](https://img.shields.io/badge/Networking-Dio-orange.svg)](https://pub.dev/packages/dio)
+[![Architecture](https://img.shields.io/badge/Architecture-MVVM%20+%20Clean-green.svg)](https://github.com/lucas-goldner/Flutter-Clean-Architecture)
 
----
-
-## 🏛️ Architecture & Core Principles
-
-### 1. **MVVM (Model-View-ViewModel)**
-- **View**: Declarative UI built with Flutter widgets. Uses `ConsumerWidget` or `ConsumerStatefulWidget` to react to state changes.
-- **ViewModel**: Manages UI state and business logic. It orchestrates data flow from repositories and exposes state via the `AppState` pattern.
-- **Repository**: An abstraction layer that fetches data from multiple sources (Remote API via Dio or Local Storage).
-
-### 2. **State Management Flow**
-- **`AppState<S, E>` (Sealed Class)**: A type-safe way to handle UI states.
-  - `InitialState`: Default state before any interaction.
-  - `LoadingState`: Active during asynchronous operations.
-  - `SuccessState<S>`: Holds the resulting data on success.
-  - `ErrorState<E>`: Encapsulates exceptions for granular error handling.
-- **`StateManagement<T>`**: A robust base class extending `ChangeNotifier` that provides `emitState()`, ensuring UI updates only occur when meaningful state changes happen.
-
-### 3. **The Result Pattern**
-Repositories return a `Result<Value, Exception>` object. This forces explicit handling of both success and failure paths in the ViewModel, eliminating unexpected runtime crashes and improving code reliability.
+A high-performance, scalable, and maintainable Flutter boilerplate designed for enterprise-grade applications. This project leverages **Riverpod** for state management and dependency injection, following a strictly decoupled **MVVM** architecture with functional error handling.
 
 ---
 
-## 📡 Core Services & Infrastructure
+## 🏗️ Architecture Philosophy
 
-### **Network Layer (Dio)**
-A centralized `HttpService` built on **Dio** featuring:
-- **Connectivity Guard**: Real-time checks via `connectivity_plus` to prevent requests when offline.
-- **Auth Interceptor**: Transparently attaches Bearer tokens to outgoing requests.
-- **Automatic Token Refresh**: Seamlessly handles `401 Unauthorized` errors by refreshing sessions and retrying failed requests.
-- **Structured Error Mapping**: Converts raw HTTP errors into a type-safe `HttpError` enum.
+This project is built on the principles of **Clean Architecture** and **SOLID**, ensuring that the business logic is independent of the UI and external frameworks.
 
-### **Environment Configuration (Envied)**
-Uses `@Envied` for secure environment variable management. Sensitive data like `BASE_URL` is obfuscated and managed outside the source code via `.env` files.
-
-### **Persistence Layer**
-- **StorageService**: Wrapper for `shared_preferences` for non-sensitive data (user preferences, settings).
-- **SecureStorage**: Uses `flutter_secure_storage` for sensitive credentials (Auth tokens).
+### **The Layers**
+*   **Presentation (MVVM):** Reactive UI components using `ConsumerWidget`. ViewModels manage state transitions using a formal `AppState` machine.
+*   **Domain:** Logic contracts and data structures.
+*   **Data:** Repositories that orchestrate data flow between local storage and remote APIs.
+*   **Infrastructure:** Low-level services for networking, persistence, and hardware interactions.
 
 ---
 
-## 📁 Project Directory Structure
+## 📂 Project Structure
 
 ```text
 lib/
-├── main.dart                 # App entry point & ProviderScope setup
-├── core/                     # Foundation layer
-│   ├── env/                  # Environment configurations (Envied)
-│   ├── theme/                # Custom design system (Colors, Typography, Res)
-│   ├── constants/            # Global constants & API endpoints
-│   ├── utils/                # Pure Dart utility functions
-│   └── ext/                  # Reusable Dart extensions
-├── common/                   # Shared across features
-│   ├── enums/                # Global enums
-│   ├── widgets/              # Standardized UI components (Refresh Indicators, Buttons)
-│   └── state_management/     # Base ViewModel implementations
-├── services/                 # Infrastructure (Http, Storage, Connectivity)
-├── patterns/                 # Architectural contracts (AppState, Result)
-├── di/                       # Dependency Injection (Riverpod providers)
-├── routes/                   # Navigation logic (GoRouter config)
-└── features/                 # Modular business domains
-    ├── auth/                 # Authentication module
-    ├── home/                 # Main dashboard / Landing
-    └── settings/             # User preferences & Configuration
+├── main.dart                 # Application entry point
+├── di/                       # Dependency Injection (Riverpod Providers)
+├── routes/                   # Type-safe navigation (GoRouter)
+├── core/                     # Essential application foundation
+│   ├── env/                  # Secure Environment Config (Envied)
+│   ├── theme/                # Design System (Res, Colors, Typography)
+│   ├── constants/            # Global API Endpoints & Static Keys
+│   └── utils/                # Extensions & Helper functions
+├── common/                   # Shared UI & Logic
+│   ├── widgets/              # Standardized Components (Buttons, Indicators)
+│   └── state_management/     # Base classes for ViewModels
+├── services/                 # Infrastructure Services
+│   ├── network/              # Dio implementation, Interceptors, Connectivity
+│   └── local_db/             # Secure & Persistent storage
+├── patterns/                 # Architectural Contracts
+│   ├── app_state_pattern.dart # Sealed classes for UI State
+│   └── result_pattern.dart    # Functional Success/Failure handling
+└── features/                 # Domain-driven feature modules
+    ├── auth/                 # Authentication flow
+    ├── home/                 # Main business logic & Dashboard
+    └── settings/             # User configuration
 ```
 
 ---
 
-## 🛠️ Development Workflow
+## 🚀 Key Features & Implementation
 
-### **Adding a New Feature**
-1. Create a module under `lib/features/`.
-2. Define the **Model** and **Repository** interfaces.
-3. Create a **ViewModel** by extending `StateManagement`.
-4. Register the ViewModel and Repository in `lib/di/`.
-5. Implement the **View** and bind it to the ViewModel using `ref.watch`.
+### 🛡️ **Functional State Management**
+Instead of using booleans for loading/error states, we use **Sealed Classes**. This eliminates invalid UI states and makes the code more predictable.
+```dart
+// Example of pattern matching in the View
+final state = ref.watch(loginViewModelProvider);
 
-### **Environment Setup**
-1. Create a `.env` file in the root directory.
-2. Define your variables:
-   ```env
-   BASE_URL=https://api.example.com
-   ```
-3. Run the generator:
-   ```bash
-   dart run build_runner build --delete-conflicting-outputs
-   ```
+return switch (state) {
+  InitialState() => const LoginInitialWidget(),
+  LoadingState() => const CircularProgressIndicator(),
+  SuccessState(data: user) => HomeView(user: user),
+  ErrorState(error: e) => ErrorDialog(message: e.toString()),
+};
+```
 
----
+### 🔗 **The Result Pattern**
+We treat errors as first-class citizens. Repositories return a `Result<S, E>`, forcing the developer to handle both success and failure cases explicitly via the `fold` method.
 
-## 🚀 Getting Started
+### 🌐 **Advanced Networking**
+*   **Interceptors:** Automatic header injection and logging.
+*   **Auto-Refresh:** Seamlessly handles token expiration and request retries.
+*   **Connectivity Guard:** Prevent API calls when the device is offline to save resources and improve UX.
 
-1.  **Environment**: Flutter SDK `^3.12.1`
-2.  **Installation**:
-    ```bash
-    flutter pub get
-    ```
-3.  **Code Generation**:
-    ```bash
-    dart run build_runner build
-    ```
-4.  **Run Project**:
-    ```bash
-    flutter run
-    ```
+### 🔐 **Secure Environment**
+All sensitive keys are managed via `.env` files and obfuscated using `Envied` code generation, preventing API key leakage in decompiled code.
 
 ---
 
-## 📑 Key Features
-- ✅ **Clean Architecture**: Strong separation of concerns.
-- ✅ **Type-Safe Navigation**: Powered by `GoRouter`.
-- ✅ **Reactive Styling**: Custom `Onest` font family integration.
-- ✅ **Robust Error Handling**: Integrated `Result` and `AppState` patterns.
-- ✅ **Performance Optimized**: Fine-grained rebuilds with Riverpod.
+## 🛠️ Setup & Installation
+
+### 1. Requirements
+*   Flutter SDK: `^3.12.1`
+*   Dart SDK: `^3.0.0`
+
+### 2. Environment Setup
+Create a `.env` file in the project root:
+```env
+BASE_URL=https://api.example.com
+API_KEY=your_secret_key
+ENVIRONMENT=development
+APP_NAME=RiverpodMVVM
+```
+
+### 3. Initialize
+```bash
+# Install dependencies
+flutter pub get
+
+# Generate environment and state files
+dart run build_runner build --delete-conflicting-outputs
+
+# Launch the app
+flutter run
+```
+
+---
+
+## 🧪 Best Practices
+*   **Immutability:** Always use `final` and `const` where possible.
+*   **Decoupling:** Never instantiate a Repository inside a View; always use Riverpod DI.
+*   **Testing:** Keep business logic inside ViewModels to make it easily unit-testable.
+
+---
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for details.
