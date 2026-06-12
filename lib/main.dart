@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:river_pod_mvvm/di/providers/dependency_injector.dart';
 import 'package:river_pod_mvvm/routes/routes.dart';
 
+/// Entry point of app.
 void main() {
   final Routes appRoutes = Routes();
   runApp(ProviderScope(child: MyApp(appRoutes: appRoutes)));
@@ -13,7 +14,7 @@ class MyApp extends ConsumerWidget {
 
   const MyApp({super.key, required this.appRoutes});
 
-  // This widget is the root of your application.
+  /// Root widget.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(appFutureProvider);

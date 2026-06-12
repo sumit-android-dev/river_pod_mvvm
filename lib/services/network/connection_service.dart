@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 abstract interface class ConnectionService {
   bool get isConnected;
+
   Future<void> checkConnection();
 }
 
@@ -17,8 +18,7 @@ class ConnectionServiceImpl implements ConnectionService {
   @override
   Future<void> checkConnection() async {
     try {
-      final List<ConnectivityResult> result = await _connectivity
-          .checkConnectivity();
+      final List<ConnectivityResult> result = await _connectivity.checkConnectivity();
       final bool hasConnection = !result.contains(ConnectivityResult.none);
 
       _isConnected = hasConnection;
