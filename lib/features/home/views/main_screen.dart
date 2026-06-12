@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:river_pod_mvvm/core/theme/color/colors.dart';
 import 'package:river_pod_mvvm/features/settings/views/setting_view.dart';
 
 import 'home_view.dart';
@@ -19,9 +20,14 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final List<Widget> screens = [HomeView(), SettingView()];
 
     return Scaffold(
+      backgroundColor: AppColors.white,
       body: screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
+        backgroundColor: AppColors.white,
+        selectedItemColor: AppColors.blue35,
+        unselectedItemColor: AppColors.black,
+        elevation: 12.0,
         onTap: (index) {
           setState(() {
             _selectedIndex = index;

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:river_pod_mvvm/common/widgets/app_bar.dart';
+import 'package:river_pod_mvvm/core/theme/color/colors.dart';
+import 'package:river_pod_mvvm/core/theme/style/text_style.dart';
 import 'package:river_pod_mvvm/di/providers/dependency_injector.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -21,7 +24,8 @@ class _UserViewState extends ConsumerState<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: false, title: const Text('Home')),
+      backgroundColor: AppColors.background,
+      appBar: AppBarView(title: "Home"),
       body: SafeArea(child: Container()),
     );
   }
