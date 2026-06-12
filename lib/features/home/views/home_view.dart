@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:river_pod_mvvm/di/dependency_injector.dart';
+import 'package:river_pod_mvvm/di/providers/dependency_injector.dart';
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});

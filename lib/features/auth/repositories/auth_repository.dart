@@ -1,6 +1,6 @@
 import 'package:river_pod_mvvm/core/constants/api_constant.dart';
 import 'package:river_pod_mvvm/patterns/result_pattern.dart';
-import 'package:river_pod_mvvm/services/http_service.dart';
+import 'package:river_pod_mvvm/services/network/http_service.dart';
 import 'package:river_pod_mvvm/features/auth/exceptions/auth_exception.dart';
 import 'package:river_pod_mvvm/features/auth/models/auth_model.dart';
 import 'package:river_pod_mvvm/features/auth/models/user_profile.dart';

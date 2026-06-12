@@ -6,7 +6,7 @@ import 'package:river_pod_mvvm/features/auth/exceptions/auth_exception.dart';
 import 'package:river_pod_mvvm/features/auth/models/auth_model.dart';
 import 'package:river_pod_mvvm/features/auth/models/user_profile.dart';
 import 'package:river_pod_mvvm/features/auth/repositories/auth_repository.dart';
-import 'package:river_pod_mvvm/services/storage_service.dart';
+import 'package:river_pod_mvvm/services/local_db/secure_storage_service.dart';
 import 'package:river_pod_mvvm/features/auth/request/sign_in_request.dart';
 
 typedef AuthState = AppState<AuthModel, AuthException>;
@@ -25,7 +25,7 @@ abstract interface class AuthViewModel extends _ViewModel {
 
 class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
   final AuthRepository authRepository;
-  final StorageService storageService;
+  final SecureStorageService secureStorageService;
 
   @override
   final SignInRequest signInRequest = SignInRequest();
@@ -35,7 +35,7 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
 
   AuthViewModelImpl({
     required this.authRepository,
-    required this.storageService,
+    required this.secureStorageService,
   });
 
   @override
@@ -69,14 +69,8 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
         image: result.value.image,
       );
       await Future.wait([
-        storageService.setStringValue(
-          key: 'accessToken',
-          value: result.value.accessToken,
-        ),
-        storageService.setStringValue(
-          key: 'refreshToken',
-          value: result.value.refreshToken,
-        ),
+        secureStorageService.setAccessToken(result.value.accessToken),
+        secureStorageService.setRefreshToken(result.value.refreshToken),
       ]);
       emitState(SuccessState(data: result.value));
     } else if (result is ErrorResult<AuthModel, AuthException>) {
@@ -87,16 +81,13 @@ class AuthViewModelImpl extends _ViewModel implements AuthViewModel {
   @override
   Future<void> logout() async {
     userProfile = null;
-    await Future.wait([
-      storageService.removeValue(key: 'accessToken'),
-      storageService.removeValue(key: 'refreshToken'),
-    ]);
+    await secureStorageService.deleteTokens();
     emitState(const InitialState());
   }
 
   @override
   Future<bool> isLogin() async {
-    final token = await storageService.getStringValue(key: 'accessToken');
+    final token = await secureStorageService.getAccessToken();
     return token != null && token.isNotEmpty;
   }
 

@@ -1,8 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:river_pod_mvvm/services/connection_service.dart';
-import 'package:river_pod_mvvm/services/http_service.dart';
-import 'package:river_pod_mvvm/services/storage_service.dart';
+import 'package:river_pod_mvvm/services/network/connection_service.dart';
+import 'package:river_pod_mvvm/services/network/http_service.dart';
+import 'package:river_pod_mvvm/services/local_db/storage_service.dart';
+import 'package:river_pod_mvvm/services/local_db/secure_storage_service.dart';
 import 'package:river_pod_mvvm/features/auth/repositories/auth_repository.dart';
 import 'package:river_pod_mvvm/features/auth/view_models/auth_view_model.dart';
 
@@ -12,16 +13,20 @@ final connectionServiceProvider = Provider<ConnectionService>((ref) {
 });
 
 final httpServiceProvider = Provider<HttpService>((ref) {
-  final storageService = ref.watch(storageServiceProvider);
+  final secureStorageService = ref.watch(secureStorageServiceProvider);
   final connectionService = ref.watch(connectionServiceProvider);
   return HttpServiceImpl(
-    storageService: storageService,
+    secureStorageService: secureStorageService,
     connectionService: connectionService,
   );
 });
 
 final storageServiceProvider = Provider<StorageService>((ref) {
   return StorageServiceImpl();
+});
+
+final secureStorageServiceProvider = Provider<SecureStorageService>((ref) {
+  return SecureStorageServiceImpl();
 });
 
 // Repositories
@@ -33,10 +38,10 @@ final authRepositoryProvider = Provider.autoDispose<AuthRepository>((ref) {
 // ViewModels
 final authViewModelProvider = ChangeNotifierProvider<AuthViewModel>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
-  final storageService = ref.watch(storageServiceProvider);
+  final secureStorageService = ref.watch(secureStorageServiceProvider);
   return AuthViewModelImpl(
     authRepository: authRepository,
-    storageService: storageService,
+    secureStorageService: secureStorageService,
   );
 });
 
