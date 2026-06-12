@@ -12,13 +12,7 @@ class SettingRoutes {
     GoRoute(
       path: setting,
       builder: (context, state) {
-        return Consumer(
-          builder: (context, ref, child) {
-            return SettingView(
-              settingViewModel: ref.read(settingViewModelProvider),
-            );
-          },
-        );
+        return const SettingView();
       },
     ),
   ];

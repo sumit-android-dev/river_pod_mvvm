@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:river_pod_mvvm/src/di/dependency_injector.dart';
 import 'package:river_pod_mvvm/src/features/settings/views/setting_view.dart';
 
 import 'home_view.dart';
@@ -17,12 +16,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final settingViewModel = ref.watch(settingViewModelProvider);
-
-    final List<Widget> screens = [
-      HomeView(),
-      SettingView(settingViewModel: settingViewModel),
-    ];
+    final List<Widget> screens = [HomeView(), SettingView()];
 
     return Scaffold(
       body: screens[_selectedIndex],
@@ -34,16 +28,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.settings_outlined), activeIcon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
     );

@@ -24,6 +24,7 @@ class HttpServiceImpl implements HttpService {
   final StorageService storageService;
   final ConnectionService connectionService;
 
+  // Http Client
   final _httpClient = Dio(
     BaseOptions(
       connectTimeout: const Duration(seconds: 5),
@@ -38,7 +39,10 @@ class HttpServiceImpl implements HttpService {
   }) {
     _httpClient.interceptors.add(
       InterceptorsWrapper(
+
+        // On Request
         onRequest: (options, handler) async {
+          // Check Internet Connection.
           await connectionService.checkConnection();
           if (!connectionService.isConnected) {
             return handler.reject(
@@ -57,10 +61,14 @@ class HttpServiceImpl implements HttpService {
           }
           return handler.next(options);
         },
+
+        // On Response.
         onResponse: (response, handler) {
           debugPrint('Response: ${response.statusCode}');
           return handler.next(response);
         },
+
+        // On Error
         onError: (DioException e, handler) async {
           debugPrint('Dio error: ${e.message}');
 
@@ -78,6 +86,7 @@ class HttpServiceImpl implements HttpService {
             }
           }
 
+          // Retry API Call
           int retryCount = 0;
           int maxRetries = 3;
 
@@ -96,6 +105,7 @@ class HttpServiceImpl implements HttpService {
     );
   }
 
+  // Refresh Token
   Future<bool> _refreshToken() async {
     try {
       final refreshToken = await storageService.getStringValue(
