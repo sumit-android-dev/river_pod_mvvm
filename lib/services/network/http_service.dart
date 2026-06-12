@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:river_pod_mvvm/common/enums/http_error_enum.dart';
 import 'package:river_pod_mvvm/core/constants/api_constant.dart';
+import 'package:river_pod_mvvm/core/env/env.dart';
 import 'package:river_pod_mvvm/services/local_db/secure_storage_service.dart';
 import 'package:river_pod_mvvm/services/network/connection_service.dart';
 
@@ -26,7 +27,7 @@ class HttpServiceImpl implements HttpService {
   HttpServiceImpl({required this.secureStorageService, required this.connectionService}) {
     _httpClient = Dio(
       BaseOptions(
-        baseUrl: ApiConstant.baseUrl,
+        baseUrl: Env.baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         sendTimeout: const Duration(seconds: 30),
