@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:river_pod_mvvm/core/theme/color/colors.dart';
+import 'package:river_pod_mvvm/core/theme/style/text_style.dart';
 import 'package:river_pod_mvvm/di/providers/dependency_injector.dart';
 import 'package:river_pod_mvvm/routes/routes.dart';
 
@@ -19,9 +21,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _checkSession() async {
-    // Give a slight delay for splash animation if needed
-    await Future.delayed(const Duration(seconds: 2));
-    
+    await Future.delayed(const Duration(seconds: 1));
     if (!mounted) return;
 
     final viewModel = ref.read(authViewModelProvider);
@@ -36,13 +36,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FlutterLogo(size: 100),
+            const FlutterLogo(size: 100),
+            Text("River Pod", style: AppTextStyle.onestSemiBold(textColor: AppColors.black, textSize: 24.0)),
           ],
         ),
       ),
