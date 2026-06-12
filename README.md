@@ -88,7 +88,7 @@ All sensitive keys are managed via `.env` files and obfuscated using `Envied` co
 ### 2. Environment Setup
 Create a `.env` file in the project root:
 ```env
-BASE_URL=https://api.example.com
+BASE_URL=https://dummyjson.com
 ```
 
 ### 3. Initialize
